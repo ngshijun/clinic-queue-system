@@ -44,7 +44,7 @@ const fetchCurrentNumber = async () => {
     console.log('API Response:', data)
 
     // Handle the response data
-    const newCurrentNumber = data.data?.[0]?.queuno || 0
+    const newCurrentNumber = data.queueNo
 
     if (newCurrentNumber !== currentNumber.value) {
       console.log(`Queue updated: ${currentNumber.value} → ${newCurrentNumber}`)
