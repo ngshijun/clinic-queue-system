@@ -158,7 +158,6 @@ watch([currentNumber, patientNumber], () => {
         <h1 class="text-2xl sm:text-5xl font-bold text-gray-800 mb-2 sm:mb-4 leading-tight">
           🏥 POLIKLINIK NG PLT 黄氏药房
         </h1>
-        <p class="text-sm sm:text-xl text-gray-600">Queue Management System</p>
       </div>
 
       <!-- Patient Number Input Section -->
@@ -169,7 +168,11 @@ watch([currentNumber, patientNumber], () => {
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
 
         <div class="mb-8 sm:mb-10">
-          <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">Enter Your Queue Number</h2>
+          <div class="space-y-2 sm:space-y-3">
+            <h2 class="text-xl sm:text-3xl font-semibold text-gray-800">Enter Your Queue Number</h2>
+            <h2 class="text-lg sm:text-2xl font-semibold text-gray-700">Masukkan Nombor Giliran Anda</h2>
+            <h2 class="text-lg sm:text-2xl font-semibold text-gray-700">输入您的排队号码</h2>
+          </div>
         </div>
 
         <div class="max-w-md mx-auto">
@@ -189,7 +192,10 @@ watch([currentNumber, patientNumber], () => {
             :disabled="!patientNumberInput || isNaN(parseInt(patientNumberInput)) || parseInt(patientNumberInput) <= 0"
             class="w-full px-6 py-4 sm:px-8 sm:py-5 bg-indigo-600 text-white text-lg sm:text-xl font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            📋 Submit Queue Number
+            <div class="space-y-1">
+              <div>📋 Submit Queue Number</div>
+              <div class="text-sm">Hantar Nombor Giliran | 提交排队号码</div>
+            </div>
           </button>
         </div>
       </div>
@@ -207,7 +213,11 @@ watch([currentNumber, patientNumber], () => {
 
           <!-- Current Queue Number -->
           <div class="mb-4 sm:mb-6">
-            <h2 class="text-lg sm:text-2xl font-semibold text-gray-700 mb-3 sm:mb-4">Current Queue Number</h2>
+            <div class="space-y-1 sm:space-y-2 mb-3 sm:mb-4">
+              <h2 class="text-lg sm:text-2xl font-semibold text-gray-700">Current Queue Number</h2>
+              <h2 class="text-base sm:text-xl font-semibold text-gray-600">Nombor Giliran Semasa</h2>
+              <h2 class="text-base sm:text-xl font-semibold text-gray-600">当前排队号码</h2>
+            </div>
 
             <div class="relative flex items-center justify-center">
               <div
@@ -224,7 +234,7 @@ watch([currentNumber, patientNumber], () => {
           >
             <div class="flex items-center space-x-2">
               <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span>Live Updates</span>
+              <span>Live Updates | Kemaskini Langsung | 实时更新</span>
             </div>
 
             <div v-if="lastUpdated" class="flex items-center space-x-2">
@@ -248,7 +258,11 @@ watch([currentNumber, patientNumber], () => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             <!-- Your Number -->
             <div class="text-center">
-              <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">Your Queue Number</h3>
+              <div class="space-y-1 mb-2 sm:mb-3">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-700">Your Queue Number</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-600">Nombor Giliran Anda</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-600">您的排队号码</h3>
+              </div>
               <div class="text-8xl sm:text-8xl font-bold text-green-600 mb-2">
                 {{ patientNumber.toString() }}
               </div>
@@ -256,18 +270,24 @@ watch([currentNumber, patientNumber], () => {
                 @click="resetPatientNumber"
                 class="text-xs sm:text-sm text-gray-500 hover:text-gray-700 underline transition-colors duration-200"
               >
-                Change Number
+                Change Number | Tukar Nombor | 更改号码
               </button>
             </div>
 
             <!-- Wait Time -->
             <div class="text-center">
-              <h3 class="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">Estimated Wait Time</h3>
+              <div class="space-y-1 mb-2 sm:mb-3">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-700">Estimated Wait Time</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-600">Anggaran Masa Menunggu</h3>
+                <h3 class="text-sm sm:text-base font-semibold text-gray-600">预计等待时间</h3>
+              </div>
               <div class="text-7xl sm:text-7xl font-bold text-orange-600 mb-2">
                 {{ estimatedWait }}
               </div>
               <div v-if="patientNumber > currentNumber" class="text-xs sm:text-sm text-gray-500">
-                {{ `${patientNumber - currentNumber} people ahead` }}
+                <div>{{ `${patientNumber - currentNumber} people ahead` }}</div>
+                <div class="text-xs">{{ `${patientNumber - currentNumber} orang di hadapan` }}</div>
+                <div class="text-xs">{{ `前面还有 ${patientNumber - currentNumber} 人` }}</div>
               </div>
             </div>
           </div>
@@ -278,7 +298,10 @@ watch([currentNumber, patientNumber], () => {
               @click="resetPatientNumber"
               class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              ✅ Clear My Number
+              <div class="space-y-1">
+                <div>✅ Clear My Number</div>
+                <div class="text-sm">Kosongkan Nombor Saya | 清除我的号码</div>
+              </div>
             </button>
           </div>
         </div>
@@ -286,7 +309,9 @@ watch([currentNumber, patientNumber], () => {
 
       <!-- Footer -->
       <div class="text-center mt-6 sm:mt-8 text-gray-500 text-xs sm:text-sm px-4">
-        <p>© 2025 Poliklinik NG PLT - Queue Management System</p>
+        <div class="space-y-1">
+          <p>© 2025 Poliklinik NG PLT - Queue Management System</p>
+        </div>
       </div>
     </div>
   </div>
