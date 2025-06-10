@@ -70,6 +70,7 @@ const fetchToken = async () => {
     const formData = new FormData()
     formData.append('username', import.meta.env.VITE_API_USERNAME)
     formData.append('password', import.meta.env.VITE_API_PASSWORD)
+    console.log("formData", formData)
 
     const response = await fetch('/api/auth/', {
       method: 'POST',
