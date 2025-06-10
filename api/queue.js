@@ -11,5 +11,5 @@ export async function GET(request) {
     }),
   })
   const data = await response.json()
-  return new Response(JSON.parse(`{ "queueNo": ${data.data[0]?.queuno || 0}`))
+  return Response.json({ queueNo: data.data[0]?.queuno || 0 })
 }
