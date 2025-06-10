@@ -1,4 +1,4 @@
-export async function GET(request: Request) {
+export async function GET(request) {
   const response = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
     method: 'POST',
     headers: {
