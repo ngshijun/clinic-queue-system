@@ -72,21 +72,38 @@ const fetchCurrentNumber = async () => {
 
 const fetchToken = async () => {
   try {
-    const formData = new FormData()
-    formData.append('username', import.meta.env.VITE_API_USERNAME)
-    formData.append('password', import.meta.env.VITE_API_PASSWORD)
+    console.log('Fetching token from API...')
 
     const response = await fetch(`${API_BASE_URL}/auth/`, {
       method: 'POST',
-      body: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(), // Empty body since credentials are handled server-side
     })
 
-    if (!response.ok) throw new Error(`Token error: ${response.status}`)
+    console.log('Token response status:', response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Token fetch failed:', errorText)
+      throw new Error(`Token error: ${response.status} - ${errorText}`)
+    }
 
     const data = await response.json()
-    token.value = data.access_token
+    console.log('Token response data:', data)
+
+    if (data.access_token) {
+      token.value = data.access_token
+      console.log('Token successfully obtained')
+    } else {
+      console.error('No access_token in response:', data)
+      throw new Error('Invalid token response format')
+    }
+
   } catch (error) {
     console.error('Error fetching token:', error)
+    throw error // Re-throw to handle in calling function
   }
 }
 
