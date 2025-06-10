@@ -10,6 +10,11 @@ const lastUpdated = ref<Date | null>(null)
 const token = ref<string | null>(null)
 let intervalId: number | null = null
 
+// Determine if we're in production (Vercel) or development
+const API_BASE_URL = import.meta.env.PROD 
+  ? '' // In production, use relative URLs (handled by Vercel functions)
+  : '/api' // In development, use Vite proxy
+
 const estimateTime = () => {
   if (patientNumber.value !== null && currentNumber.value < patientNumber.value) {
     const diff = patientNumber.value - currentNumber.value
@@ -37,7 +42,7 @@ const fetchCurrentNumber = async () => {
 
   isLoading.value = true
   try {
-    const response = await fetch('/api/get_last_queue_no', {
+    const response = await fetch(`${API_BASE_URL}/api/protege/get_last_queue_no`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +57,7 @@ const fetchCurrentNumber = async () => {
     if (!response.ok) throw new Error(`Fetch error: ${response.status}`)
 
     const data = await response.json()
-    const newCurrentNumber = data.data[0]?.queuno || 0
+    const newCurrentNumber = data.data[0]?.queuno.value || 0
 
     if (newCurrentNumber !== currentNumber.value) {
       currentNumber.value = newCurrentNumber
@@ -70,9 +75,8 @@ const fetchToken = async () => {
     const formData = new FormData()
     formData.append('username', import.meta.env.VITE_API_USERNAME)
     formData.append('password', import.meta.env.VITE_API_PASSWORD)
-    console.log("formData", formData)
 
-    const response = await fetch('/api/auth/', {
+    const response = await fetch(`${API_BASE_URL}/auth/`, {
       method: 'POST',
       body: formData,
     })
