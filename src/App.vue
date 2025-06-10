@@ -10,8 +10,6 @@ const lastUpdated = ref<Date | null>(null)
 const token = ref<string | null>(null)
 let intervalId: number | null = null
 
-const BASE_URL = import.meta.env.PROD ? 'https://protege.powerapi.powersoft.asia' : '/api'
-
 const estimateTime = () => {
   if (patientNumber.value !== null && currentNumber.value < patientNumber.value) {
     const diff = patientNumber.value - currentNumber.value
@@ -39,7 +37,7 @@ const fetchCurrentNumber = async () => {
 
   isLoading.value = true
   try {
-    const response = await fetch(`${BASE_URL}/api/protege/get_last_queue_no`, {
+    const response = await fetch('/api/get_last_queue_no', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -73,7 +71,7 @@ const fetchToken = async () => {
     formData.append('username', import.meta.env.VITE_API_USERNAME)
     formData.append('password', import.meta.env.VITE_API_PASSWORD)
 
-    const response = await fetch(`${BASE_URL}/auth/`, {
+    const response = await fetch('/api/auth/', {
       method: 'POST',
       body: formData,
     })
