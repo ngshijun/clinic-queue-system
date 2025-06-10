@@ -7,9 +7,6 @@ export default async function handler(req, res) {
     const response = await fetch('http://protege.powerapi.powersoft.asia/auth/', {
       method: 'POST',
       body: req.body,
-      headers: {
-        'Content-Type': req.headers['content-type'],
-      },
     });
 
     const data = await response.json();
