@@ -81,8 +81,8 @@ const resetPatientNumber = () => {
 const startTimer = () => {
   // Fetch immediately
   fetchCurrentNumber()
-  // Then set interval for every 10 seconds
-  intervalId = setInterval(fetchCurrentNumber, 10000)
+  // Then set interval for every 30 seconds
+  intervalId = setInterval(fetchCurrentNumber, 30000)
 }
 
 // Clean up timer
