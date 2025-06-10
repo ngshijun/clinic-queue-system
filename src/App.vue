@@ -10,7 +10,7 @@ const lastUpdated = ref<Date | null>(null)
 const token = ref<string | null>(null)
 let intervalId: number | null = null
 
-const BASE_URL = import.meta.env.PROD ? 'http://protege.powerapi.powersoft.asia' : '/api'
+const BASE_URL = import.meta.env.PROD ? 'https://protege.powerapi.powersoft.asia' : '/api'
 
 const estimateTime = () => {
   if (patientNumber.value !== null && currentNumber.value < patientNumber.value) {
