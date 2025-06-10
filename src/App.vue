@@ -12,7 +12,7 @@ let intervalId: number | null = null
 
 // Determine if we're in production (Vercel) or development
 const API_BASE_URL = import.meta.env.PROD 
-  ? '' // In production, use relative URLs (handled by Vercel functions)
+  ? '/api' // In production, use relative URLs (handled by Vercel functions)
   : '/api' // In development, use Vite proxy
 
 const estimateTime = () => {
@@ -42,7 +42,7 @@ const fetchCurrentNumber = async () => {
 
   isLoading.value = true
   try {
-    const response = await fetch(`${API_BASE_URL}/api/protege/get_last_queue_no`, {
+    const response = await fetch(`${API_BASE_URL}/protege/get_last_queue_no`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
