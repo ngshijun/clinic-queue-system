@@ -7,13 +7,7 @@ const currentNumber = ref(0)
 const estimatedWait = ref<string>('Calculating...')
 const isLoading = ref(false)
 const lastUpdated = ref<Date | null>(null)
-const token = ref<string | null>(null)
 let intervalId: number | null = null
-
-// Determine if we're in production (Vercel) or development
-const API_BASE_URL = import.meta.env.PROD 
-  ? '/api' // In production, use relative URLs (handled by Vercel functions)
-  : '/api' // In development, use Vite proxy
 
 const estimateTime = () => {
   if (patientNumber.value !== null && currentNumber.value < patientNumber.value) {
@@ -35,18 +29,14 @@ const estimateTime = () => {
 // Function to fetch current queue number from API
 const fetchCurrentNumber = async () => {
   lastUpdated.value = new Date()
-  if (!token.value) {
-    fetchToken()
-    return
-  }
-
   isLoading.value = true
+
   try {
-    const response = await fetch(`${API_BASE_URL}/protege/get_last_queue_no`, {
+    // Use Vercel API route instead of direct API call
+    const response = await fetch('/api/queue', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify({
         registerno: '4215',
@@ -54,56 +44,29 @@ const fetchCurrentNumber = async () => {
       }),
     })
 
-    if (!response.ok) throw new Error(`Fetch error: ${response.status}`)
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+    }
 
     const data = await response.json()
-    const newCurrentNumber = data.data[0]?.queuno.value || 0
+    console.log('API Response:', data)
+
+    // Handle the response data
+    const newCurrentNumber = data.data?.[0]?.queuno || 0
 
     if (newCurrentNumber !== currentNumber.value) {
+      console.log(`Queue updated: ${currentNumber.value} → ${newCurrentNumber}`)
       currentNumber.value = newCurrentNumber
       estimateTime()
     }
   } catch (error) {
     console.error('Error fetching current number:', error)
+
+    // Optional: Show error to user
+    // You could add an error state here to display to users
   } finally {
     isLoading.value = false
-  }
-}
-
-const fetchToken = async () => {
-  try {
-    console.log('Fetching token from API...')
-
-    const response = await fetch(`${API_BASE_URL}/auth/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams(), // Empty body since credentials are handled server-side
-    })
-
-    console.log('Token response status:', response.status)
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Token fetch failed:', errorText)
-      throw new Error(`Token error: ${response.status} - ${errorText}`)
-    }
-
-    const data = await response.json()
-    console.log('Token response data:', data)
-
-    if (data.access_token) {
-      token.value = data.access_token
-      console.log('Token successfully obtained')
-    } else {
-      console.error('No access_token in response:', data)
-      throw new Error('Invalid token response format')
-    }
-
-  } catch (error) {
-    console.error('Error fetching token:', error)
-    throw error // Re-throw to handle in calling function
   }
 }
 
@@ -127,7 +90,7 @@ const resetPatientNumber = () => {
 const startTimer = () => {
   // Fetch immediately
   fetchCurrentNumber()
-  // Then set interval for every 30 seconds
+  // Then set interval for every 10 seconds
   intervalId = setInterval(fetchCurrentNumber, 10000)
 }
 
@@ -146,7 +109,7 @@ onMounted(() => {
     patientNumber.value = parseInt(stored)
     patientNumberInput.value = stored
   }
-  fetchToken().then(() => startTimer())
+  startTimer()
   lastUpdated.value = new Date()
 })
 
