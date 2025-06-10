@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/queue.js": {
-      "maxDuration": 10
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
