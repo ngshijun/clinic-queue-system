@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       method: 'POST',
       body: req.body,
       headers: {
-        'Content-type': 'application/x-www-form-urlencoded',
+        'Content-type': 'multipart/form-data',
       },
     })
 
