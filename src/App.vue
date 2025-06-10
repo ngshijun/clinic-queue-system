@@ -33,18 +33,7 @@ const fetchCurrentNumber = async () => {
 
   try {
     // Use Vercel API route instead of direct API call
-    // const response = await fetch('/api/queue', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     registerno: '4215',
-    //     visitdate: new Date().toISOString().split('T')[0],
-    //   }),
-    // })
-    const response = await fetch('/api/test')
-    console.log(response)
+    const response = await fetch('/api/queue')
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))

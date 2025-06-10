@@ -1,4 +1,4 @@
-export async function GET(request) {
+export async function GET(request: Request) {
   const response = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
     method: 'POST',
     headers: {
@@ -11,5 +11,5 @@ export async function GET(request) {
     }),
   })
   const data = await response.json()
-  return new Response(data.data[0]?.queuno || 0)
+  return new Response(JSON.parse(`{"queueNo": ${data.data[0]?.queuno || 0}}`))
 }
