@@ -52,7 +52,7 @@ const fetchCurrentNumber = async () => {
     if (!response.ok) throw new Error(`Fetch error: ${response.status}`)
 
     const data = await response.json()
-    const newCurrentNumber = data[0]?.queuno || 0
+    const newCurrentNumber = data.data[0]?.queuno || 0
 
     if (newCurrentNumber !== currentNumber.value) {
       currentNumber.value = newCurrentNumber
