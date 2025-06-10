@@ -13,7 +13,7 @@ let intervalId: number | null = null
 const estimateTime = () => {
   if (patientNumber.value !== null && currentNumber.value < patientNumber.value) {
     const diff = patientNumber.value - currentNumber.value
-    const totalMinutes = diff * 10
+    const totalMinutes = diff * 5
     const hours = Math.floor(totalMinutes / 60)
     const minutes = totalMinutes % 60
 
