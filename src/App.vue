@@ -65,7 +65,14 @@ const handleSubmit = () => {
   const numberValue = parseInt(patientNumberInput.value)
   if (!isNaN(numberValue) && numberValue > 0) {
     patientNumber.value = numberValue
-    localStorage.setItem('patientNumber', numberValue.toString())
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
+    const item = {
+      number: numberValue,
+      expiry: tomorrow,
+    }
+    localStorage.setItem('patientNumber', JSON.stringify(item))
     estimateTime()
   }
 }
@@ -97,8 +104,14 @@ const stopTimer = () => {
 onMounted(() => {
   const stored = localStorage.getItem('patientNumber')
   if (stored) {
-    patientNumber.value = parseInt(stored)
-    patientNumberInput.value = stored
+    const item = JSON.parse(stored)
+    const now = new Date()
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem('patientNumber')
+    } else {
+      patientNumber.value = item.number
+      patientNumberInput.value = item.number.toString()
+    }
   }
   startTimer()
   lastUpdated.value = new Date()
