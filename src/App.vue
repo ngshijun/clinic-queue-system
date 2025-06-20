@@ -10,19 +10,25 @@ const lastUpdated = ref<Date | null>(null)
 let intervalId: number | null = null
 
 const estimateTime = () => {
-  if (patientNumber.value !== null && currentNumber.value < patientNumber.value) {
-    const diff = patientNumber.value - currentNumber.value
-    const totalMinutes = diff * 5
-    const hours = Math.floor(totalMinutes / 60)
-    const minutes = totalMinutes % 60
-
-    if (hours > 0) {
-      estimatedWait.value = `${hours}h ${minutes}m`
+  if (patientNumber.value !== null) {
+    // If current number is greater than or equal to patient number, their turn has come or passed
+    if (currentNumber.value >= patientNumber.value) {
+      estimatedWait.value = 'Now'
     } else {
-      estimatedWait.value = `${minutes}m`
+      // Calculate wait time: patient number - current number = people ahead
+      const diff = patientNumber.value - currentNumber.value
+      const totalMinutes = diff * 5
+      const hours = Math.floor(totalMinutes / 60)
+      const minutes = totalMinutes % 60
+
+      if (hours > 0) {
+        estimatedWait.value = `${hours}h ${minutes}m`
+      } else {
+        estimatedWait.value = `${minutes}m`
+      }
     }
   } else {
-    estimatedWait.value = 'Now'
+    estimatedWait.value = 'Calculating...'
   }
 }
 
@@ -289,7 +295,7 @@ const displayPatientNumber = () => {
               <div class="text-7xl sm:text-7xl font-bold text-orange-600 mb-2">
                 {{ estimatedWait }}
               </div>
-              <div v-if="patientNumber && patientNumber > currentNumber" class="text-xs sm:text-sm text-gray-500">
+              <div v-if="patientNumber && currentNumber < patientNumber" class="text-xs sm:text-sm text-gray-500">
                 <div>{{ `${patientNumber - currentNumber} people ahead` }}</div>
                 <div class="text-xs">{{ `${patientNumber - currentNumber} orang di hadapan` }}</div>
                 <div class="text-xs">{{ `前面还有 ${patientNumber - currentNumber} 人` }}</div>
