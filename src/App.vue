@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const patientNumber = ref<number | null>(null)
 const patientNumberInput = ref<string>('')
-const currentNumber = ref(0)
+const currentNumber = ref<number>(0) // Initialize with 0 instead of just 0
 const estimatedWait = ref<string>('Calculating...')
 const isLoading = ref(false)
 const lastUpdated = ref<Date | null>(null)
@@ -43,8 +43,8 @@ const fetchCurrentNumber = async () => {
     const data = await response.json()
     console.log('API Response:', data)
 
-    // Handle the response data
-    const newCurrentNumber = data.queueNo
+    // Handle the response data - ensure it's a number
+    const newCurrentNumber = typeof data.queueNo === 'number' ? data.queueNo : 0
 
     if (newCurrentNumber !== currentNumber.value) {
       console.log(`Queue updated: ${currentNumber.value} → ${newCurrentNumber}`)
@@ -104,13 +104,20 @@ const stopTimer = () => {
 onMounted(() => {
   const stored = localStorage.getItem('patientNumber')
   if (stored) {
-    const item = JSON.parse(stored)
-    const now = new Date()
-    if (now.getTime() > item.expiry) {
+    try {
+      const item = JSON.parse(stored)
+      const now = new Date()
+      if (now.getTime() > item.expiry) {
+        localStorage.removeItem('patientNumber')
+      } else {
+        console.log('Patient number:', item.number)
+        console.log('Patient number input:', item.number.toString())
+        patientNumber.value = item.number
+        patientNumberInput.value = item.number.toString()
+      }
+    } catch (error) {
+      console.error('Error parsing stored patient number:', error)
       localStorage.removeItem('patientNumber')
-    } else {
-      patientNumber.value = item.number
-      patientNumberInput.value = item.number.toString()
     }
   }
   startTimer()
@@ -137,6 +144,15 @@ watch([currentNumber, patientNumber], () => {
     estimateTime()
   }
 })
+
+// Helper functions to safely display numbers
+const displayCurrentNumber = () => {
+  return currentNumber.value?.toString() || '0'
+}
+
+const displayPatientNumber = () => {
+  return patientNumber.value?.toString() || '0'
+}
 </script>
 
 <template>
@@ -212,7 +228,7 @@ watch([currentNumber, patientNumber], () => {
               <div
                 class="relative z-10 text-9xl sm:text-9xl font-bold text-indigo-600 transition-all duration-500 ease-in-out"
               >
-                {{ currentNumber.toString() }}
+                {{ displayCurrentNumber() }}
               </div>
             </div>
           </div>
@@ -253,7 +269,7 @@ watch([currentNumber, patientNumber], () => {
                 <h3 class="text-sm sm:text-base font-semibold text-gray-600">您的排队号码</h3>
               </div>
               <div class="text-8xl sm:text-8xl font-bold text-green-600 mb-2">
-                {{ patientNumber.toString() }}
+                {{ displayPatientNumber() }}
               </div>
               <button
                 @click="resetPatientNumber"
@@ -273,7 +289,7 @@ watch([currentNumber, patientNumber], () => {
               <div class="text-7xl sm:text-7xl font-bold text-orange-600 mb-2">
                 {{ estimatedWait }}
               </div>
-              <div v-if="patientNumber > currentNumber" class="text-xs sm:text-sm text-gray-500">
+              <div v-if="patientNumber && patientNumber > currentNumber" class="text-xs sm:text-sm text-gray-500">
                 <div>{{ `${patientNumber - currentNumber} people ahead` }}</div>
                 <div class="text-xs">{{ `${patientNumber - currentNumber} orang di hadapan` }}</div>
                 <div class="text-xs">{{ `前面还有 ${patientNumber - currentNumber} 人` }}</div>
