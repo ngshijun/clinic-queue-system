@@ -1,9 +1,22 @@
 export async function GET(request) {
-  const response = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
+  const tokenResponse = await fetch('http://protege.powerapi.powersoft.asia/auth/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      username: process.env.API_USERNAME,
+      password: process.env.API_PASSWORD,
+    }),
+  })
+  const tokenData = await tokenResponse.json()
+  const token = tokenData.access_token
+
+  const queueResponse = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.API_TOKEN}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       registerno: '4215',
