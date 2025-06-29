@@ -23,6 +23,6 @@ export async function GET(request) {
       visitdate: new Date().toISOString().split('T')[0],
     }),
   })
-  const data = await response.json()
+  const data = await queueResponse.json()
   return Response.json({ queueNo: data.data[0]?.queuno || 0 })
 }
