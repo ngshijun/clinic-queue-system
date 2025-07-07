@@ -31,7 +31,7 @@ const { isLoading, lastUpdated, error, formatTime, displayCurrentNumber } = useQ
         <!-- The main number display -->
         <div class="relative flex items-center justify-center mb-8">
           <div
-            class="relative z-10 text-[14rem] sm:text-[18rem] lg:text-[22rem] font-black text-indigo-600 transition-all duration-500 ease-in-out drop-shadow-lg"
+            class="relative z-10 text-[18rem] sm:text-[22rem] lg:text-[26rem] font-black text-indigo-600 transition-all duration-500 ease-in-out drop-shadow-lg"
             :class="{ 'animate-pulse': isLoading }"
           >
             {{ displayCurrentNumber() }}
