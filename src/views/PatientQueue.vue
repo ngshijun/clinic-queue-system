@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { useQueue } from '../composables/useQueue'
 
 const patientNumber = ref<number | null>(null)
