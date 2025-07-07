@@ -3,7 +3,6 @@ import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQueue } from '../composables/useQueue'
 
-const router = useRouter()
 const patientNumber = ref<number | null>(null)
 const patientNumberInput = ref<string>('')
 const estimatedWait = ref<string>('Calculating...')
@@ -55,10 +54,6 @@ const resetPatientNumber = () => {
   estimatedWait.value = 'Calculating...'
 }
 
-const goToDisplay = () => {
-  router.push('/display')
-}
-
 onMounted(() => {
   const stored = localStorage.getItem('patientNumber')
   if (stored) {
@@ -99,16 +94,6 @@ const displayPatientNumber = () => {
         <h1 class="text-2xl sm:text-5xl font-bold text-gray-800 mb-2 sm:mb-4 leading-tight">
           🏥 POLIKLINIK NG PLT 黄氏药房
         </h1>
-        
-        <!-- Navigation Button -->
-        <div class="mt-4">
-          <button
-            @click="goToDisplay"
-            class="px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-all duration-200"
-          >
-            📺 Display Mode | 显示模式
-          </button>
-        </div>
       </div>
 
       <!-- Patient Number Input Section -->
