@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useQueue } from '../composables/useQueue'
 // Use the queue composable with faster updates for display (15 seconds)
-const { isLoading, lastUpdated, error, formatTime, displayCurrentNumber } = useQueue(15000)
+const { isLoading, lastUpdated, error, formatTime, displayCurrentNumber } = useQueue()
 </script>
 
 <template>
