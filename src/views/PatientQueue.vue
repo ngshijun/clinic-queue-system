@@ -62,8 +62,6 @@ onMounted(() => {
       if (now.getTime() > item.expiry) {
         localStorage.removeItem('patientNumber')
       } else {
-        console.log('Patient number:', item.number)
-        console.log('Patient number input:', item.number.toString())
         patientNumber.value = item.number
         patientNumberInput.value = item.number.toString()
       }

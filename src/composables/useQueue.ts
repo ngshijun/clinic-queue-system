@@ -22,12 +22,9 @@ export function useQueue(updateInterval: number = 30000) {
       }
 
       const data = await response.json()
-      console.log('API Response:', data)
-
       const newCurrentNumber = typeof data.queueNo === 'number' ? data.queueNo : 0
 
       if (newCurrentNumber !== currentNumber.value) {
-        console.log(`Queue updated: ${currentNumber.value} → ${newCurrentNumber}`)
         currentNumber.value = newCurrentNumber
       }
     } catch (err) {
