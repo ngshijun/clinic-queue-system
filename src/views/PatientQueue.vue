@@ -12,7 +12,7 @@ const { currentNumber, isLoading, lastUpdated, formatTime, displayCurrentNumber 
 const estimateTime = () => {
   if (patientNumber.value !== null) {
     if (currentNumber.value >= patientNumber.value) {
-      estimatedWait.value = 'Now'
+      estimatedWait.value = 'Now/现在'
     } else {
       const diff = patientNumber.value - currentNumber.value
       const totalMinutes = diff * 5
@@ -20,9 +20,9 @@ const estimateTime = () => {
       const minutes = totalMinutes % 60
 
       if (hours > 0) {
-        estimatedWait.value = `${hours}h ${minutes}m`
+        estimatedWait.value = `${hours}h/小时 ${minutes}m/分钟`
       } else {
-        estimatedWait.value = `${minutes}m`
+        estimatedWait.value = `${minutes}m/分钟`
       }
     }
   } else {
