@@ -55,7 +55,6 @@ const resetPatientNumber = () => {
 }
 
 const maybeNotify = () => {
-  console.log("maybeNotify triggered", Notification.permission)
   if (
     'Notification' in window &&
     Notification.permission === 'granted' &&
