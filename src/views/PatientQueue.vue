@@ -55,6 +55,7 @@ const resetPatientNumber = () => {
 }
 
 const maybeNotify = () => {
+  console.log("maybeNotify triggered", Notification.permission)
   if (
     'Notification' in window &&
     Notification.permission === 'granted' &&
@@ -62,11 +63,10 @@ const maybeNotify = () => {
     currentNumber.value !== null
   ) {
     const remainingPatients = patientNumber.value - currentNumber.value
-
-    // Show notifications at different intervals
+    
     if ([5, 3, 1].includes(remainingPatients)) {
       try {
-        new Notification('Your turn soon | Giliran anda hampir tiba | 即将轮到您', {
+        new Notification('🏥 Your Turn Soon!', {
           body: `${remainingPatients} patients ahead | ${remainingPatients} pesakit lagi | 还有${remainingPatients}位`,
           icon: '/clinic.svg',
           tag: 'patient-queue-trilingual',
