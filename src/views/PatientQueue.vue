@@ -30,10 +30,10 @@ const estimateTime = () => {
   }
 }
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
   const numberValue = parseInt(patientNumberInput.value)
   if (!isNaN(numberValue) && numberValue > 0) {
-    await requestNotificationPermission()
+    // Set the patient number immediately
     patientNumber.value = numberValue
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
@@ -44,6 +44,11 @@ const handleSubmit = async () => {
     }
     localStorage.setItem('patientNumber', JSON.stringify(item))
     estimateTime()
+    
+    // Request permission in background - don't block UI
+    requestNotificationPermission().catch(error => {
+      console.warn('Permission request failed:', error)
+    })
   }
 }
 
