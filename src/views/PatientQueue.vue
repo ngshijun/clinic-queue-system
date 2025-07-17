@@ -30,9 +30,10 @@ const estimateTime = () => {
   }
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   const numberValue = parseInt(patientNumberInput.value)
   if (!isNaN(numberValue) && numberValue > 0) {
+    await requestNotificationPermission()
     patientNumber.value = numberValue
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
@@ -58,23 +59,34 @@ const maybeNotify = () => {
     'Notification' in window &&
     Notification.permission === 'granted' &&
     patientNumber.value !== null &&
-    currentNumber.value !== null &&
-    patientNumber.value - currentNumber.value === 3
+    currentNumber.value !== null
   ) {
-    const remainingPatients = patientNumber.value - currentNumber.value;
-    
-    new Notification('Your turn soon | Giliran anda hampir tiba | 即将轮到您', {
-      body: `${remainingPatients} patients ahead | ${remainingPatients} pesakit lagi | 还有${remainingPatients}位`,
-      icon: '/clinic.svg',
-      tag: 'patient-queue-trilingual'
-    });
+    const remainingPatients = patientNumber.value - currentNumber.value
+
+    // Show notifications at different intervals
+    if ([5, 3, 1].includes(remainingPatients)) {
+      try {
+        new Notification('Your turn soon | Giliran anda hampir tiba | 即将轮到您', {
+          body: `${remainingPatients} patients ahead | ${remainingPatients} pesakit lagi | 还有${remainingPatients}位`,
+          icon: '/clinic.svg',
+          tag: 'patient-queue-trilingual',
+        })
+      } catch (error) {
+        console.error('Failed to show notification:', error)
+      }
+    }
   }
-};
+}
+
+const requestNotificationPermission = async () => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    const permission = await Notification.requestPermission()
+    return permission === 'granted'
+  }
+  return Notification.permission === 'granted'
+}
 
 onMounted(() => {
-  if ('Notification' in window && Notification.permission !== 'granted') {
-    Notification.requestPermission()
-  }
   const stored = localStorage.getItem('patientNumber')
   if (stored) {
     try {
