@@ -39,7 +39,7 @@ const handleSubmit = () => {
     tomorrow.setHours(0, 0, 0, 0)
     const item = {
       number: numberValue,
-      expiry: tomorrow,
+      expiry: tomorrow.getTime(),
     }
     localStorage.setItem('patientNumber', JSON.stringify(item))
     estimateTime()
