@@ -53,7 +53,28 @@ const resetPatientNumber = () => {
   estimatedWait.value = 'Calculating...'
 }
 
+const maybeNotify = () => {
+  if (
+    'Notification' in window &&
+    Notification.permission === 'granted' &&
+    patientNumber.value !== null &&
+    currentNumber.value !== null &&
+    patientNumber.value - currentNumber.value === 3
+  ) {
+    const remainingPatients = patientNumber.value - currentNumber.value;
+    
+    new Notification('Your turn soon | Giliran anda hampir tiba | 即将轮到您', {
+      body: `${remainingPatients} patients ahead | ${remainingPatients} pesakit lagi | 还有${remainingPatients}位`,
+      icon: '/clinic.svg',
+      tag: 'patient-queue-trilingual'
+    });
+  }
+};
+
 onMounted(() => {
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission()
+  }
   const stored = localStorage.getItem('patientNumber')
   if (stored) {
     try {
@@ -75,6 +96,7 @@ onMounted(() => {
 watch([currentNumber, patientNumber], () => {
   if (patientNumber.value !== null) {
     estimateTime()
+    maybeNotify()
   }
 })
 
