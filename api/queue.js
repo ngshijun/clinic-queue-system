@@ -37,10 +37,6 @@ async function getAuthToken() {
 
 export async function GET(request) {
   try {
-    console.log("date", new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 10))
-
     const token = await getAuthToken()
 
     const queueResponse = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
@@ -51,9 +47,7 @@ export async function GET(request) {
       },
       body: JSON.stringify({
         registerno: '4215',
-        visitdate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 10),
+        visitdate: new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Kuala_Lumpur' }),
       }),
     })
 
@@ -72,9 +66,7 @@ export async function GET(request) {
           },
           body: JSON.stringify({
             registerno: '4215',
-            visitdate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-            .toISOString()
-            .slice(0, 10),
+            visitdate: new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Kuala_Lumpur' }),
           }),
         })
         
