@@ -47,7 +47,9 @@ export async function GET(request) {
       },
       body: JSON.stringify({
         registerno: '4215',
-        visitdate: new Date().toISOString().split('T')[0],
+        visitdate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 10),
       }),
     })
 
@@ -66,7 +68,9 @@ export async function GET(request) {
           },
           body: JSON.stringify({
             registerno: '4215',
-            visitdate: new Date().toISOString().split('T')[0],
+            visitdate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 10),
           }),
         })
         
