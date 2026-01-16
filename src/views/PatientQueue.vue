@@ -151,7 +151,7 @@ const displayPatientNumber = () => {
             <input
               v-model="patientNumberInput"
               type="number"
-              placeholder="Eg. 42"
+              placeholder="Eg. 1234"
               class="w-full px-6 py-4 sm:px-8 sm:py-5 text-xl sm:text-2xl text-center border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors duration-200"
               @keyup.enter="handleSubmit"
               min="1"
