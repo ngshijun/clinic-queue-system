@@ -57,9 +57,9 @@ onUnmounted(() => {
       <!-- Left: hero number -->
       <div class="anim-rise-2 relative flex flex-col justify-center items-center">
         <div class="text-center mb-6 space-y-1 trilingual-label">
-          <p>Now Serving</p>
-          <p>Sedang Dilayan</p>
-          <p class="text-cjk">现正叫号</p>
+          <p>Current Number</p>
+          <p>Nombor Semasa</p>
+          <p class="text-cjk">当前号码</p>
         </div>
 
         <div class="relative flex items-center justify-center w-full">
