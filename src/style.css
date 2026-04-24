@@ -1,1 +1,382 @@
 @import 'tailwindcss';
+
+@theme {
+  /* Palette — warm paper, solid colors. No alpha-fading for dividers or text. */
+  --color-paper: #f4ecd8;
+  --color-paper-2: #ede2c8;
+  --color-surface: #faf5e6;
+  --color-ink: #1c2b2a;
+  --color-ink-2: #2e3e3c;
+  --color-muted: #6b6a5a;
+  --color-rule: #c8bda5;
+  --color-rule-soft: #dcd2b9;
+  --color-accent: #a24c28;
+  --color-accent-soft: #d99f7e;
+  --color-moss: #5f6e3e;
+  --color-crimson: #8a2e28;
+
+  --font-display:
+    'Fraunces', 'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC',
+    'Times New Roman', serif;
+  --font-sans:
+    'IBM Plex Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Source Han Sans SC', 'Noto Sans CJK SC', ui-sans-serif, system-ui,
+    -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-cjk:
+    'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-size: 18px; /* elderly-friendly root; all downstream rems scale up */
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-paper);
+    background-image:
+      radial-gradient(1200px 700px at 10% -10%, rgba(162, 76, 40, 0.08), transparent 60%),
+      radial-gradient(900px 500px at 110% 0%, rgba(95, 110, 62, 0.08), transparent 55%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-variation-settings: 'SOFT' 30, 'WONK' 0;
+    letter-spacing: -0.015em;
+  }
+
+  /* Display numerals — tabular, lining, soft Fraunces axis */
+  .numerals-display {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum', 'lnum';
+    font-variation-settings: 'opsz' 144, 'SOFT' 40, 'WONK' 1;
+    letter-spacing: -0.04em;
+    color: var(--color-ink);
+  }
+
+  .numerals-display-soft {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: 'tnum', 'lnum';
+    font-variation-settings: 'opsz' 96, 'SOFT' 60, 'WONK' 1;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+  }
+
+  .text-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-variation-settings: 'opsz' 48, 'SOFT' 30, 'WONK' 0;
+    color: var(--color-ink);
+  }
+
+  /* Labels — readable at 13px, no extreme tracking */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .eyebrow-lg {
+    font-family: var(--font-sans);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+  }
+
+  .text-cjk {
+    font-family: var(--font-cjk);
+    font-feature-settings: 'palt';
+  }
+
+  /* Ornamental rule with eyebrow label inside */
+  .rule {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .rule::before,
+  .rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  /* Double-rule like a pharmacy label header */
+  .double-rule {
+    border-top: 1.5px solid var(--color-ink);
+    border-bottom: 1.5px solid var(--color-ink);
+    padding: 0.6rem 0;
+    position: relative;
+  }
+  .double-rule::before,
+  .double-rule::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-rule);
+  }
+  .double-rule::before {
+    top: 4px;
+  }
+  .double-rule::after {
+    bottom: 4px;
+  }
+
+  /* Hairline divider — solid color, not alpha */
+  .hairline {
+    height: 1px;
+    background: var(--color-rule);
+    width: 100%;
+  }
+
+  /* Ink-stamp badge */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    border: 1.5px solid currentColor;
+    padding: 0.45rem 0.9rem 0.4rem;
+    transform: rotate(-1.5deg);
+    border-radius: 2px;
+    position: relative;
+    background: rgba(162, 76, 40, 0.04);
+  }
+  .stamp::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 1px dashed currentColor;
+    opacity: 0.3;
+    border-radius: 2px;
+  }
+
+  /* Input — underline style, no faded placeholder */
+  .field-underline {
+    background: transparent;
+    border: 0;
+    border-bottom: 2.5px solid var(--color-ink);
+    padding: 0.6rem 0.25rem;
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 72, 'SOFT' 40, 'WONK' 1;
+    font-weight: 500;
+    color: var(--color-ink);
+    outline: 0;
+    transition: border-color 0.2s;
+  }
+  .field-underline:focus {
+    border-bottom-color: var(--color-accent);
+  }
+  .field-underline::placeholder {
+    color: var(--color-rule);
+    font-variation-settings: 'opsz' 72, 'SOFT' 80, 'WONK' 1;
+  }
+
+  /* Primary letterpress button */
+  .btn-letterpress {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+    padding: 1.1rem 1.6rem;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border: 0;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s, background 0.25s;
+    min-height: 56px;
+  }
+  .btn-letterpress:hover:not(:disabled) {
+    background: var(--color-accent);
+  }
+  .btn-letterpress:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .btn-letterpress:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .btn-letterpress::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 1.5px solid var(--color-ink);
+    pointer-events: none;
+  }
+
+  /* Ghost button — clearly visible outline */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 1.05rem;
+    padding: 1.15rem 2rem;
+    background: transparent;
+    color: var(--color-ink);
+    border: 2px solid var(--color-ink);
+    cursor: pointer;
+    transition: background 0.2s;
+    min-height: 60px;
+  }
+  .btn-ghost:hover {
+    background: var(--color-paper-2);
+  }
+
+  /* Corner brackets — archival card */
+  .brackets {
+    position: relative;
+  }
+  .brackets::before,
+  .brackets::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-ink);
+    pointer-events: none;
+  }
+  .brackets::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+  }
+  .brackets::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
+  }
+
+  /* Live indicator — larger, more visible */
+  .live-pulse {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--color-moss);
+    animation: dot-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.85); }
+    50%      { opacity: 1; transform: scale(1.15); }
+  }
+
+  /* Number transition */
+  .number-fade-enter-active,
+  .number-fade-leave-active {
+    transition: opacity 0.4s cubic-bezier(0.2, 0.6, 0.2, 1),
+                transform 0.4s cubic-bezier(0.2, 0.6, 0.2, 1),
+                filter 0.4s;
+  }
+  .number-fade-enter-from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(3px);
+  }
+  .number-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(2px);
+  }
+  .number-fade-leave-active {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Staggered reveal on mount */
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .anim-rise { animation: rise 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .anim-rise-2 { animation: rise 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 100ms both; }
+  .anim-rise-3 { animation: rise 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 200ms both; }
+  .anim-rise-4 { animation: rise 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both; }
+
+  /* Crosshair cross */
+  .ink-cross {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    position: relative;
+  }
+  .ink-cross::before,
+  .ink-cross::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+  }
+  .ink-cross::before {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-50%);
+  }
+  .ink-cross::after {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    transform: translateY(-50%);
+  }
+
+  /* Utility colors */
+  .text-ink { color: var(--color-ink); }
+  .text-ink-2 { color: var(--color-ink-2); }
+  .text-muted-app { color: var(--color-muted); }
+  .text-accent { color: var(--color-accent); }
+  .text-moss { color: var(--color-moss); }
+  .text-crimson { color: var(--color-crimson); }
+  .bg-paper-2 { background: var(--color-paper-2); }
+  .bg-surface-app { background: var(--color-surface); }
+}

@@ -1,110 +1,130 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useQueue } from '../composables/useQueue'
-// Use the queue composable with faster updates for display (15 seconds)
+
 const { isLoading, lastUpdated, error, formatTime, displayCurrentNumber } = useQueue()
+
+const clock = ref<string>('')
+let clockTimer: number | null = null
+
+const updateClock = () => {
+  const now = new Date()
+  clock.value = now.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+}
+
+onMounted(() => {
+  updateClock()
+  clockTimer = window.setInterval(updateClock, 1000 * 15)
+})
+
+onUnmounted(() => {
+  if (clockTimer) clearInterval(clockTimer)
+})
 </script>
 
 <template>
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-  <!-- Container for both components -->
-  <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 max-w-7xl w-full">
-    
-    <!-- Left Component - Main Queue Display -->
-    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 text-center relative overflow-hidden border border-white/30 flex-1">
-      <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-      
-      <!-- Error indicator -->
-      <div v-if="error" class="absolute top-6 right-6 sm:top-8 sm:right-8">
-        <div class="flex items-center space-x-2 text-red-500 text-sm font-medium">
-          <span>⚠️</span>
-          <span>Connection Error</span>
-        </div>
+  <main class="min-h-screen flex flex-col">
+    <!-- Top masthead -->
+    <header class="anim-rise px-12 pt-7 pb-4">
+      <div class="flex items-center justify-end mb-4">
+        <span class="numerals-display-soft" style="font-size: 1.85rem; font-weight: 500;">
+          {{ clock }}
+        </span>
       </div>
-      
-      <!-- Current Queue Number -->
-      <div class="mb-6 sm:mb-8">
-        <div class="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Current Queue Number</h2>
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Nombor Giliran Semasa</h2>
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">当前排队号码</h2>
-        </div>
-        
-        <!-- The main number display -->
-        <div class="relative flex items-center justify-center mb-6">
-          <div
-            class="relative z-10 text-[8rem] sm:text-[12rem] lg:text-[16rem] font-black text-indigo-600 transition-all duration-500 ease-in-out drop-shadow-lg"
-            :class="{ 'animate-pulse': isLoading }"
-          >
-            {{ displayCurrentNumber() }}
-          </div>
-          <!-- Glowing background effect -->
-          <div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 rounded-full blur-3xl"></div>
-        </div>
-      </div>
-      
-      <!-- Status information -->
-      <div class="space-y-3 sm:space-y-4">
-        <!-- Live status -->
-        <div class="flex justify-center items-center space-x-4 text-base sm:text-lg text-gray-700">
-          <div class="flex items-center space-x-3">
-            <div class="w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded-full animate-pulse"></div>
-            <span class="font-semibold">Live Updates | Kemaskini Langsung | 实时更新</span>
-          </div>
-        </div>
-        
-        <!-- Last updated time -->
-        <div v-if="lastUpdated" class="flex justify-center items-center space-x-3 text-sm sm:text-base text-gray-600">
-          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>Last Updated: {{ formatTime(lastUpdated) }}</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- Right Component - QR Code Display -->
-    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 text-center relative overflow-hidden border border-white/30 flex-1">
-      <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-500 to-emerald-600"></div>
-      
-      <!-- QR Code Section -->
-      <div class="mb-6 sm:mb-8">
-        <div class="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Scan for Updates</h2>
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Imbas untuk Kemaskini</h2>
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">扫描获取更新</h2>
+      <div class="double-rule">
+        <h1
+          class="text-display text-center"
+          style="font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 500; font-variation-settings: 'opsz' 144, 'SOFT' 30, 'WONK' 1;"
+        >
+          Poliklinik Ng PLT
+          <span class="text-accent mx-3">·</span>
+          <span class="text-cjk">黄氏药房</span>
+        </h1>
+      </div>
+
+      <p class="eyebrow text-center mt-3.5" style="font-size: clamp(0.95rem, 1vw, 1.2rem);">
+        Queue Display · Paparan Giliran · 叫号显示
+      </p>
+    </header>
+
+    <!-- Main content: 60/40 split -->
+    <section class="flex-1 grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-8 lg:gap-14 px-10 pb-5">
+      <!-- Left: hero number -->
+      <div class="anim-rise-2 relative flex flex-col justify-center items-center">
+        <div class="text-center mb-6 space-y-1 trilingual-label">
+          <p>Now Serving</p>
+          <p>Sedang Dilayan</p>
+          <p class="text-cjk">正在服务</p>
         </div>
-        
-        <!-- QR Code Display -->
-        <div class="relative flex items-center justify-center mb-6">
-          <div class="relative z-10 bg-white p-6 rounded-2xl shadow-lg">
-            <!-- QR Code placeholder - replace with actual QR code component -->
-            <div class="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center">
-              <img src="../assets/images/qrcode.svg" alt="QR Code" class="w-full h-full object-contain">
+
+        <div class="relative flex items-center justify-center w-full">
+          <transition name="number-fade" mode="out-in">
+            <div
+              :key="displayCurrentNumber()"
+              class="numerals-display text-center"
+              style="font-size: clamp(12rem, 25vw, 28rem); font-weight: 500; line-height: 0.82;"
+            >
+              {{ displayCurrentNumber() }}
+            </div>
+          </transition>
+        </div>
+
+        <!-- Offline notice only when connection fails -->
+        <p v-if="error" class="mt-5 eyebrow text-crimson text-center">
+          Connection error
+        </p>
+      </div>
+
+      <!-- Right: join-the-queue card -->
+      <aside class="anim-rise-3 flex flex-col justify-center">
+        <div class="brackets relative p-8 lg:p-10 bg-surface-app">
+          <div class="text-center mb-6 space-y-1.5 trilingual-title">
+            <p>Scan to follow the queue</p>
+            <p>Imbas untuk ikut giliran</p>
+            <p class="text-cjk">扫码跟踪排队</p>
+          </div>
+
+          <div class="flex justify-center">
+            <div class="p-3.5 bg-paper border-[1.5px] border-[var(--color-ink)]">
+              <img
+                src="../assets/images/qrcode.svg"
+                alt="QR code"
+                class="block"
+                style="width: clamp(250px, 25vw, 410px); height: auto; filter: contrast(1.1);"
+              />
             </div>
           </div>
-          <!-- Glowing background effect -->
-          <div class="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10 rounded-full blur-3xl"></div>
         </div>
-      </div>
-      
-      <!-- Instructions -->
-      <div class="space-y-3 sm:space-y-4">
-        <div class="text-sm sm:text-base text-gray-600 space-y-2">
-          <p class="font-medium">Scan to get real-time queue updates on your device</p>
-          <p class="font-medium">Imbas untuk mendapat kemaskini giliran secara langsung</p>
-          <p class="font-medium">扫描二维码在您的设备上获取实时队列更新</p>
-        </div>
-      </div>
-    </div>
-    
-  </div>
-</div>
+      </aside>
+    </section>
+
+  </main>
 </template>
 
 <style scoped>
+/* Trilingual labels stacked above the hero number — all three languages
+   share the same size/weight so none is visually prioritised. */
+.trilingual-label p {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(1.1rem, 1.4vw, 1.6rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+  line-height: 1.2;
+}
+
+.trilingual-title p {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1.6vw, 1.8rem);
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  line-height: 1.3;
+}
 </style>
