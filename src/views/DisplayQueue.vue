@@ -46,10 +46,6 @@ onUnmounted(() => {
           <span class="text-cjk">黄氏药房</span>
         </h1>
       </div>
-
-      <p class="eyebrow text-center mt-3.5" style="font-size: clamp(0.95rem, 1vw, 1.2rem);">
-        Queue Display · Paparan Giliran · 叫号显示
-      </p>
     </header>
 
     <!-- Main content: 60/40 split -->

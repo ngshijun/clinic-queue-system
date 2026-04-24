@@ -119,10 +119,6 @@ watch([currentNumber, patientNumber], () => {
           Poliklinik Ng PLT <span class="text-accent">·</span> <span class="text-cjk">黄氏药房</span>
         </h1>
       </div>
-
-      <p class="eyebrow text-center mt-2.5">
-        {{ t.queueShort }}
-      </p>
     </header>
 
     <!-- Entry form -->

@@ -16,7 +16,6 @@ watch(lang, (v) => {
 })
 
 type Dict = {
-  queueShort: string
   enterNumber: string
   submit: string
   savedUntilMidnight: string
@@ -36,7 +35,6 @@ type Dict = {
 }
 
 const en: Dict = {
-  queueShort: 'Queue',
   enterNumber: 'Enter your queue number',
   submit: 'Submit',
   savedUntilMidnight: 'Your number is saved on this device until midnight.',
@@ -56,7 +54,6 @@ const en: Dict = {
 }
 
 const ms: Dict = {
-  queueShort: 'Giliran',
   enterNumber: 'Masukkan nombor giliran anda',
   submit: 'Hantar',
   savedUntilMidnight: 'Nombor anda disimpan di peranti ini sehingga tengah malam.',
@@ -76,7 +73,6 @@ const ms: Dict = {
 }
 
 const zh: Dict = {
-  queueShort: '排队',
   enterNumber: '请输入您的排队号码',
   submit: '确认',
   savedUntilMidnight: '您的号码会保存至今晚十二点。',
