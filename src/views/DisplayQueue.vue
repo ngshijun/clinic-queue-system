@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useQueue } from '../composables/useQueue'
 
-const { isLoading, lastUpdated, error, formatTime, displayCurrentNumber } = useQueue()
+const { error, displayCurrentNumber } = useQueue()
 
 const clock = ref<string>('')
 let clockTimer: number | null = null

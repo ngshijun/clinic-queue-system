@@ -9,7 +9,7 @@ const { t, lang } = useLang()
 const patientNumber = ref<number | null>(null)
 const patientNumberInput = ref<string>('')
 
-const { currentNumber, isLoading, lastUpdated, error, formatTime, displayCurrentNumber } = useQueue(30000)
+const { currentNumber, error, displayCurrentNumber } = useQueue(30000)
 
 const positionsAhead = computed(() => {
   if (patientNumber.value === null) return 0
