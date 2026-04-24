@@ -59,7 +59,7 @@ onUnmounted(() => {
         <div class="text-center mb-6 space-y-1 trilingual-label">
           <p>Now Serving</p>
           <p>Sedang Dilayan</p>
-          <p class="text-cjk">正在服务</p>
+          <p class="text-cjk">现正叫号</p>
         </div>
 
         <div class="relative flex items-center justify-center w-full">
@@ -84,9 +84,9 @@ onUnmounted(() => {
       <aside class="anim-rise-3 flex flex-col justify-center">
         <div class="brackets relative p-8 lg:p-10 bg-surface-app">
           <div class="text-center mb-6 space-y-1.5 trilingual-title">
-            <p>Scan to follow the queue</p>
-            <p>Imbas untuk ikut giliran</p>
-            <p class="text-cjk">扫码跟踪排队</p>
+            <p>Scan for queue updates</p>
+            <p>Imbas untuk kemaskini giliran</p>
+            <p class="text-cjk">扫码获取排队更新</p>
           </div>
 
           <div class="flex justify-center">
