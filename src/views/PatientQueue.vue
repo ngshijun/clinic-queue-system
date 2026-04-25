@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { useQueue } from '../composables/useQueue'
 import { useLang } from '../composables/useLang'
+import { subscribeToPush, unsubscribeFromPush, requestPushPermission, pushPermission, pushSupported } from '../composables/usePushSub'
 import LangSwitcher from '../components/LangSwitcher.vue'
 
 const { t, lang } = useLang()
@@ -9,7 +10,7 @@ const { t, lang } = useLang()
 const patientNumber = ref<number | null>(null)
 const patientNumberInput = ref<string>('')
 
-const { currentNumber, error, displayCurrentNumber } = useQueue(30000)
+const { currentNumber, error, displayCurrentNumber } = useQueue(90000)
 
 const positionsAhead = computed(() => {
   if (patientNumber.value === null) return 0
@@ -29,6 +30,10 @@ const estimatedWait = computed(() => {
   return hours > 0 ? `${hours} ${t.value.hours} ${minutes} ${t.value.minutes}` : `${minutes} ${t.value.minutes}`
 })
 
+const notifPermission = ref<NotificationPermission>(pushPermission())
+const isSubscribed = computed(() => notifPermission.value === 'granted')
+const showNotifyButton = computed(() => pushSupported() && notifPermission.value === 'default')
+
 const handleSubmit = () => {
   const numberValue = parseInt(patientNumberInput.value)
   if (!isNaN(numberValue) && numberValue > 0) {
@@ -40,42 +45,28 @@ const handleSubmit = () => {
       'patientNumber',
       JSON.stringify({ number: numberValue, expiry: tomorrow.getTime() }),
     )
-    requestNotificationPermission().catch(() => {})
-  }
-}
-
-const resetPatientNumber = () => {
-  patientNumber.value = null
-  patientNumberInput.value = ''
-  localStorage.removeItem('patientNumber')
-}
-
-const maybeNotify = () => {
-  if (
-    'Notification' in window &&
-    Notification.permission === 'granted' &&
-    patientNumber.value !== null &&
-    currentNumber.value !== null
-  ) {
-    const remaining = patientNumber.value - currentNumber.value
-    if ([5, 3, 1].includes(remaining)) {
-      try {
-        new Notification(`Poliklinik Ng — ${t.value.yourTurn}`, {
-          body: t.value.aheadOfYou(remaining),
-          icon: '/clinic.svg',
-          tag: 'patient-queue',
-        })
-      } catch {}
+    if (notifPermission.value === 'granted') {
+      subscribeToPush(numberValue, lang.value).catch(() => {})
     }
   }
 }
 
-const requestNotificationPermission = async () => {
-  if ('Notification' in window && Notification.permission === 'default') {
-    const permission = await Notification.requestPermission()
-    return permission === 'granted'
+const handleEnableNotifications = async () => {
+  const result = await requestPushPermission()
+  notifPermission.value = result
+  if (result === 'granted' && patientNumber.value !== null) {
+    subscribeToPush(patientNumber.value, lang.value).catch(() => {})
   }
-  return Notification.permission === 'granted'
+}
+
+const resetPatientNumber = () => {
+  const oldNumber = patientNumber.value
+  patientNumber.value = null
+  patientNumberInput.value = ''
+  localStorage.removeItem('patientNumber')
+  if (oldNumber !== null) {
+    unsubscribeFromPush(oldNumber).catch(() => {})
+  }
 }
 
 onMounted(() => {
@@ -86,6 +77,7 @@ onMounted(() => {
       if (new Date().getTime() <= item.expiry) {
         patientNumber.value = item.number
         patientNumberInput.value = item.number.toString()
+        subscribeToPush(item.number, lang.value).catch(() => {})
       } else {
         localStorage.removeItem('patientNumber')
       }
@@ -95,9 +87,9 @@ onMounted(() => {
   }
 })
 
-watch([currentNumber, patientNumber], () => {
+watch(lang, (newLang) => {
   if (patientNumber.value !== null) {
-    maybeNotify()
+    subscribeToPush(patientNumber.value, newLang).catch(() => {})
   }
 })
 </script>
@@ -106,9 +98,32 @@ watch([currentNumber, patientNumber], () => {
   <main class="min-h-screen px-5 pt-3.5 pb-9 sm:pt-7 sm:pb-14 max-w-[680px] mx-auto" :class="{ 'text-cjk-app': lang === 'zh' }">
     <!-- Masthead -->
     <header class="anim-rise">
-      <!-- Lang selector, right-aligned -->
-      <div class="flex justify-end mb-2.5">
-        <LangSwitcher />
+      <!-- Top controls: notify bell on the left, language on the right -->
+      <div class="flex items-center mb-2.5 min-h-[40px]">
+        <button
+          v-if="patientNumber !== null && showNotifyButton"
+          type="button"
+          class="notify-chip"
+          :aria-label="t.enableNotifications"
+          @click="handleEnableNotifications"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+          </svg>
+          <span>{{ t.enableNotifications }}</span>
+        </button>
+        <span
+          v-else-if="patientNumber !== null && isSubscribed"
+          class="notify-chip-active"
+          :aria-label="t.notificationsActive"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a6 6 0 0 0-6 6c0 7-3 9-3 9h18s-3-2-3-9a6 6 0 0 0-6-6zM10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+          </svg>
+          <span>{{ t.notificationsActive }}</span>
+        </span>
+        <LangSwitcher class="ml-auto" />
       </div>
 
       <div class="double-rule">
@@ -267,5 +282,38 @@ watch([currentNumber, patientNumber], () => {
 <style scoped>
 .text-cjk-app {
   font-family: var(--font-cjk), var(--font-sans);
+}
+
+.notify-chip,
+.notify-chip-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  padding: 0.4rem 0.5rem;
+  line-height: 1;
+  min-height: 40px;
+}
+
+.notify-chip {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.notify-chip:hover,
+.notify-chip:focus-visible {
+  color: var(--color-ink);
+}
+
+.notify-chip-active {
+  color: var(--color-moss);
+  user-select: none;
 }
 </style>

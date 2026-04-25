@@ -1,21 +1,18 @@
-// api/queue.js
-let tokenCache = {
-  token: null,
-  expiry: null
-}
+import { fanOutForCurrent, todayKey } from './_lib/push.js'
+
+const QUEUE_URL = 'http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no'
+const REGISTER_NO = '4215'
+
+let tokenCache = { token: null, expiry: null }
 
 async function getAuthToken() {
-  // Check if we have a valid cached token
   if (tokenCache.token && tokenCache.expiry && new Date() < tokenCache.expiry) {
     return tokenCache.token
   }
 
-  // Get new token
   const tokenResponse = await fetch('http://protege.powerapi.powersoft.asia/auth/', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       username: process.env.API_USERNAME,
       password: process.env.API_PASSWORD,
@@ -27,62 +24,42 @@ async function getAuthToken() {
   }
 
   const tokenData = await tokenResponse.json()
-  
-  // Cache the token
   tokenCache.token = tokenData.access_token
-  tokenCache.expiry = new Date(Date.now() + 3600000 * 24) // 1 day from now
-  
+  tokenCache.expiry = new Date(Date.now() + 3600000 * 24)
   return tokenCache.token
+}
+
+async function fetchQueue(token) {
+  return fetch(QUEUE_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ registerno: REGISTER_NO, visitdate: todayKey() }),
+  })
 }
 
 export async function GET(request) {
   try {
-    const token = await getAuthToken()
+    let response = await fetchQueue(await getAuthToken())
 
-    const queueResponse = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        registerno: '4215',
-        visitdate: new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Kuala_Lumpur' }),
-      }),
-    })
-
-    if (!queueResponse.ok) {
-      // If unauthorized, clear cache and retry once
-      if (queueResponse.status === 401) {
-        tokenCache.token = null
-        tokenCache.expiry = null
-        const newToken = await getAuthToken()
-        
-        const retryResponse = await fetch('http://protege.powerapi.powersoft.asia/api/protege/get_last_queue_no', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${newToken}`,
-          },
-          body: JSON.stringify({
-            registerno: '4215',
-            visitdate: new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Kuala_Lumpur' }),
-          }),
-        })
-        
-        if (!retryResponse.ok) {
-          throw new Error(`Queue API failed: ${retryResponse.status}`)
-        }
-        
-        const retryData = await retryResponse.json()
-        return Response.json({ queueNo: retryData.data[0]?.queuno || 0 })
-      }
-      
-      throw new Error(`Queue API failed: ${queueResponse.status}`)
+    if (response.status === 401) {
+      tokenCache = { token: null, expiry: null }
+      response = await fetchQueue(await getAuthToken())
+    }
+    if (!response.ok) {
+      throw new Error(`Queue API failed: ${response.status}`)
     }
 
-    const data = await queueResponse.json()
-    return Response.json({ queueNo: data.data[0]?.queuno || 0 })
+    const data = await response.json()
+    const queueNo = data.data[0]?.queuno || 0
+
+    fanOutForCurrent(queueNo).catch((err) =>
+      console.error('fanOut error (non-fatal):', err?.message ?? err),
+    )
+
+    return Response.json({ queueNo })
   } catch (error) {
     console.error('API Error:', error)
     return Response.json({ queueNo: 0, error: error.message }, { status: 500 })

@@ -32,6 +32,8 @@ type Dict = {
   now: string
   minutes: string
   hours: string
+  enableNotifications: string
+  notificationsActive: string
 }
 
 const en: Dict = {
@@ -51,6 +53,8 @@ const en: Dict = {
   now: 'Now',
   minutes: 'min',
   hours: 'hr',
+  enableNotifications: 'Notify me',
+  notificationsActive: 'Notifications on',
 }
 
 const ms: Dict = {
@@ -70,6 +74,8 @@ const ms: Dict = {
   now: 'Sekarang',
   minutes: 'min',
   hours: 'jam',
+  enableNotifications: 'Beritahu saya',
+  notificationsActive: 'Pemberitahuan aktif',
 }
 
 const zh: Dict = {
@@ -89,6 +95,8 @@ const zh: Dict = {
   now: '现在',
   minutes: '分钟',
   hours: '小时',
+  enableNotifications: '通知我',
+  notificationsActive: '通知已开启',
 }
 
 const dict: Record<Lang, Dict> = { en, ms, zh }
