@@ -4,16 +4,14 @@ import { useQueue } from '../composables/useQueue'
 
 const { error, displayCurrentNumber } = useQueue()
 
-const clock = ref<string>('')
+const clockHours = ref<string>('')
+const clockMinutes = ref<string>('')
 let clockTimer: number | null = null
 
 const updateClock = () => {
   const now = new Date()
-  clock.value = now.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+  clockHours.value = String(now.getHours()).padStart(2, '0')
+  clockMinutes.value = String(now.getMinutes()).padStart(2, '0')
 }
 
 onMounted(() => {
@@ -31,8 +29,8 @@ onUnmounted(() => {
     <!-- Top masthead -->
     <header class="anim-rise px-12 pt-7 pb-4">
       <div class="flex items-center justify-end mb-4">
-        <span class="numerals-display-soft" style="font-size: 1.85rem; font-weight: 500;">
-          {{ clock }}
+        <span class="numerals-display-soft" style="font-size: 2.4rem; font-weight: 500;">
+          {{ clockHours }}<span class="clock-colon">:</span>{{ clockMinutes }}
         </span>
       </div>
 
@@ -122,5 +120,14 @@ onUnmounted(() => {
   letter-spacing: 0.02em;
   color: var(--color-ink);
   line-height: 1.3;
+}
+
+.clock-colon {
+  display: inline-block;
+  animation: clock-blink 1s steps(2, start) infinite;
+}
+
+@keyframes clock-blink {
+  to { visibility: hidden; }
 }
 </style>
