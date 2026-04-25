@@ -49,21 +49,23 @@ onMounted(() => {
     >
       <div
         v-if="showUpdateNotice"
-        class="brackets fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] w-[min(360px,calc(100vw-3rem))] p-5 bg-surface-app shadow-xl"
+        class="paper-card brackets !fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] w-[min(360px,calc(100vw-3rem))] p-5 !shadow-xl"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="flex-1">
-            <div class="eyebrow mb-1.5" style="color: var(--color-accent)">{{ t.appUpdateTitle }}</div>
-            <p class="text-sm leading-relaxed" style="color: var(--color-ink-2)">{{ t.appUpdateDescription }}</p>
+            <div class="eyebrow !text-[0.6875rem] !font-medium !tracking-[0.22em] mb-1" style="color: var(--color-accent)">
+              {{ t.appUpdateTitle }}
+            </div>
+            <p class="text-sm text-ink-2 leading-relaxed">{{ t.appUpdateDescription }}</p>
           </div>
           <button
-            class="shrink-0 text-muted-app hover:text-[var(--color-ink)] text-2xl leading-none -mt-1 -mr-1 px-1 transition-colors"
+            class="shrink-0 text-muted-app hover:text-ink text-lg leading-none -mt-1"
             :aria-label="t.close"
             @click="snoozeNotice"
           >×</button>
         </div>
-        <button class="btn-letterpress w-full mt-4" @click="reloadPage">
-          {{ t.appUpdateRefresh }}
+        <button class="btn-primary w-full !py-2 text-sm mt-4" @click="reloadPage">
+          {{ t.appUpdateRefresh }} <span aria-hidden>↻</span>
         </button>
       </div>
     </Transition>
