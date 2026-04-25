@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useLang } from './composables/useLang'
+import { refreshApp } from './pwa'
 
 const { t } = useLang()
 const showUpdateNotice = ref(false)
@@ -13,7 +14,7 @@ const showUpdateNotice = ref(false)
 const SNOOZE_KEY = 'web_update_snoozed_until'
 const SNOOZE_MS = 60 * 60 * 1000
 
-function reloadPage() { window.location.reload() }
+function reloadPage() { refreshApp() }
 
 function snoozeNotice() {
   try { localStorage.setItem(SNOOZE_KEY, String(Date.now() + SNOOZE_MS)) } catch {}
@@ -29,7 +30,7 @@ onMounted(() => {
   // Lazy-loaded chunk 404s after a deploy mean the user is stranded on stale
   // bundle metadata; reload picks up the new manifest.
   window.addEventListener('vite:preloadError', () => {
-    window.location.reload()
+    refreshApp()
   })
 })
 </script>
