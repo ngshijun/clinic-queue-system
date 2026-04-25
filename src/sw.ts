@@ -29,8 +29,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title ?? 'Poliklinik Ng PLT', {
       body: data.body ?? '',
-      icon: '/clinic.svg',
-      badge: '/clinic.svg',
+      icon: '/icon.png',
+      badge: '/icon.png',
       tag: data.tag ?? 'queue',
       renotify: true,
       requireInteraction: true,
