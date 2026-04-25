@@ -34,6 +34,10 @@ type Dict = {
   hours: string
   enableNotifications: string
   notificationsActive: string
+  appUpdateTitle: string
+  appUpdateDescription: string
+  appUpdateRefresh: string
+  close: string
 }
 
 const en: Dict = {
@@ -55,6 +59,10 @@ const en: Dict = {
   hours: 'hr',
   enableNotifications: 'Notify me',
   notificationsActive: 'Notifications on',
+  appUpdateTitle: 'A new version is available',
+  appUpdateDescription: 'Refresh to get the latest changes.',
+  appUpdateRefresh: 'Refresh',
+  close: 'Close',
 }
 
 const ms: Dict = {
@@ -76,6 +84,10 @@ const ms: Dict = {
   hours: 'jam',
   enableNotifications: 'Beritahu saya',
   notificationsActive: 'Pemberitahuan aktif',
+  appUpdateTitle: 'Versi baharu tersedia',
+  appUpdateDescription: 'Muat semula untuk mendapatkan kemaskini terkini.',
+  appUpdateRefresh: 'Muat semula',
+  close: 'Tutup',
 }
 
 const zh: Dict = {
@@ -97,6 +109,10 @@ const zh: Dict = {
   hours: '小时',
   enableNotifications: '通知我',
   notificationsActive: '通知已开启',
+  appUpdateTitle: '有新版本可用',
+  appUpdateDescription: '请刷新以获取最新内容。',
+  appUpdateRefresh: '刷新',
+  close: '关闭',
 }
 
 const dict: Record<Lang, Dict> = { en, ms, zh }
