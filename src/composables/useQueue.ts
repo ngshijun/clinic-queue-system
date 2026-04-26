@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 
 export function useQueue(updateInterval: number = 30000) {
   const currentNumber = ref<number>(0)
@@ -35,8 +35,10 @@ export function useQueue(updateInterval: number = 30000) {
     }
   }
 
-  // Set up timer for automatic updates
+  // Set up timer for automatic updates. Idempotent — calling while already
+  // running is a no-op, so callers can safely re-trigger from watchers.
   const startTimer = () => {
+    if (intervalId !== null) return
     fetchCurrentNumber()
     intervalId = setInterval(fetchCurrentNumber, updateInterval)
   }
@@ -64,11 +66,7 @@ export function useQueue(updateInterval: number = 30000) {
     return currentNumber.value?.toString() || '0'
   }
 
-  // Auto-start and cleanup
-  onMounted(() => {
-    startTimer()
-  })
-
+  // Cleanup only — caller drives start/stop based on UI state.
   onUnmounted(() => {
     stopTimer()
   })

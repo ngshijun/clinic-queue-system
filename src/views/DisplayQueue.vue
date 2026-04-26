@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useQueue } from '../composables/useQueue'
 
-const { error, displayCurrentNumber } = useQueue()
+const { error, displayCurrentNumber, startTimer } = useQueue()
 
 const clockHours = ref<string>('')
 const clockMinutes = ref<string>('')
@@ -15,6 +15,7 @@ const updateClock = () => {
 }
 
 onMounted(() => {
+  startTimer()
   updateClock()
   clockTimer = window.setInterval(updateClock, 1000 * 15)
 })

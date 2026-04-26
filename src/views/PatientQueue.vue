@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
 import { useQueue } from '../composables/useQueue'
 import { useLang } from '../composables/useLang'
 import { subscribeToPush, unsubscribeFromPush, requestPushPermission, pushPermission, pushSupported } from '../composables/usePushSub'
@@ -10,7 +10,7 @@ const { t, lang } = useLang()
 const patientNumber = ref<number | null>(null)
 const patientNumberInput = ref<string>('')
 
-const { currentNumber, error, displayCurrentNumber } = useQueue(90000)
+const { currentNumber, error, displayCurrentNumber, startTimer, stopTimer } = useQueue(90000)
 
 const positionsAhead = computed(() => {
   if (patientNumber.value === null) return 0
@@ -20,6 +20,19 @@ const positionsAhead = computed(() => {
 const isYourTurn = computed(() => {
   return patientNumber.value !== null && currentNumber.value >= patientNumber.value
 })
+
+// Pause polling when there's nothing to wait for, or when the tab is hidden.
+// Each /api/queue call can hit Redis, so idle/backgrounded tabs shouldn't keep
+// ringing it. The display screen remains the always-on fan-out trigger.
+const isVisible = ref(typeof document === 'undefined' || document.visibilityState === 'visible')
+const onVisibilityChange = () => { isVisible.value = document.visibilityState === 'visible' }
+onMounted(() => document.addEventListener('visibilitychange', onVisibilityChange))
+onUnmounted(() => document.removeEventListener('visibilitychange', onVisibilityChange))
+
+const shouldPoll = computed(
+  () => patientNumber.value !== null && !isYourTurn.value && isVisible.value,
+)
+watch(shouldPoll, (active) => (active ? startTimer() : stopTimer()), { immediate: true })
 
 const estimatedWait = computed(() => {
   if (patientNumber.value === null) return '—'
@@ -219,10 +232,10 @@ watch(lang, (newLang) => {
     <section v-else class="mt-7">
       <!-- Two-number header: Now calling + Your number side-by-side -->
       <div class="anim-rise">
-        <div class="grid grid-cols-[1fr_1fr] gap-0 relative">
+        <div class="grid grid-cols-[1fr_1fr] grid-rows-[auto_1fr] gap-x-0 gap-y-2.5 relative">
           <!-- Now -->
-          <div class="text-center pr-4">
-            <p class="eyebrow mb-2.5">{{ t.nowCalling }}</p>
+          <div class="grid grid-rows-subgrid row-span-2 text-center pr-4">
+            <p class="eyebrow self-center">{{ t.nowCalling }}</p>
             <div class="relative flex items-baseline justify-center">
               <transition name="number-fade" mode="out-in">
                 <div
@@ -243,8 +256,8 @@ watch(lang, (newLang) => {
           ></div>
 
           <!-- Yours -->
-          <div class="text-center pl-4">
-            <p class="eyebrow mb-2.5 text-accent">{{ t.yourNumber }}</p>
+          <div class="grid grid-rows-subgrid row-span-2 text-center pl-4">
+            <p class="eyebrow self-center text-accent">{{ t.yourNumber }}</p>
             <div class="relative flex items-baseline justify-center">
               <div
                 class="numerals-display"
