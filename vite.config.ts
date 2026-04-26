@@ -22,7 +22,7 @@ export default defineConfig({
       includeAssets: ['icon.png'],
       manifest: {
         name: 'Poliklinik Ng PLT Queue',
-        short_name: 'Clinic Queue',
+        short_name: 'Queue',
         description: 'Clinic queue management and display system',
         theme_color: '#F4EDE0',
         background_color: '#F4EDE0',
