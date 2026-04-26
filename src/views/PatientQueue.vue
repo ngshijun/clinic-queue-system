@@ -33,6 +33,33 @@ const estimatedWait = computed(() => {
 const notifPermission = ref<NotificationPermission>(pushPermission())
 const isSubscribed = computed(() => notifPermission.value === 'granted')
 const showNotifyButton = computed(() => pushSupported() && notifPermission.value === 'default')
+const showNotifyDenied = computed(() => pushSupported() && notifPermission.value === 'denied')
+
+const showBlockedHelp = ref(false)
+
+type Platform = 'iosBrowser' | 'iosPwa' | 'androidPwa' | 'macSafari' | 'chrome' | 'generic'
+
+function detectPlatform(): Platform {
+  const ua = navigator.userAgent
+  const isIOS = /iPhone|iPad|iPod/.test(ua) || (/Mac/.test(ua) && 'ontouchend' in document)
+  const isAndroid = /Android/.test(ua)
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
+  if (isIOS && isStandalone) return 'iosPwa'
+  if (isIOS) return 'iosBrowser'
+  if (isAndroid && isStandalone) return 'androidPwa'
+  const isChromium = /Chrome|CriOS|EdgA?|OPR/.test(ua)
+  if (isChromium) return 'chrome'
+  const isSafari = /Safari/.test(ua) && !isChromium
+  if (isSafari) return 'macSafari'
+  return 'generic'
+}
+
+const blockedSteps = computed<string[]>(() => {
+  const platform = detectPlatform()
+  return t.value.notifBlocked.steps[platform]
+})
 
 const handleSubmit = () => {
   const numberValue = parseInt(patientNumberInput.value)
@@ -112,6 +139,21 @@ watch(lang, (newLang) => {
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
           </svg>
           <span>{{ t.enableNotifications }}</span>
+        </button>
+        <button
+          v-else-if="patientNumber !== null && showNotifyDenied"
+          type="button"
+          class="notify-chip-blocked"
+          :aria-label="t.notifBlocked.buttonLabel"
+          @click="showBlockedHelp = true"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 8a6 6 0 0 1 9.33-4.99"/>
+            <path d="M18 8c0 7 3 9 3 9H7"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            <line x1="3" y1="3" x2="21" y2="21"/>
+          </svg>
+          <span>{{ t.notifBlocked.buttonLabel }}</span>
         </button>
         <span
           v-else-if="patientNumber !== null && isSubscribed"
@@ -276,6 +318,58 @@ watch(lang, (newLang) => {
       </div>
     </section>
 
+    <!-- Notifications-blocked help modal -->
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="showBlockedHelp"
+        class="fixed inset-0 z-[998] notif-blocked-backdrop"
+        @click="showBlockedHelp = false"
+      />
+    </Transition>
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="translate-y-3 opacity-0"
+      enter-to-class="translate-y-0 opacity-100"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="translate-y-0 opacity-100"
+      leave-to-class="translate-y-3 opacity-0"
+    >
+      <div
+        v-if="showBlockedHelp"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="t.notifBlocked.title"
+        class="paper-card brackets !fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[999] w-[min(420px,calc(100vw-2rem))] max-h-[80vh] overflow-y-auto p-6 !shadow-xl"
+      >
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="eyebrow !text-[0.6875rem] !font-medium !tracking-[0.22em]" style="color: var(--color-accent)">
+            {{ t.notifBlocked.title }}
+          </div>
+          <button
+            class="shrink-0 text-muted-app hover:text-ink text-xl leading-none -mt-1"
+            :aria-label="t.close"
+            @click="showBlockedHelp = false"
+          >×</button>
+        </div>
+        <p class="text-sm text-ink-2 leading-relaxed mb-4">
+          {{ t.notifBlocked.intro }}
+        </p>
+        <ol class="text-sm text-ink-2 leading-relaxed space-y-2 list-decimal pl-5">
+          <li v-for="(step, i) in blockedSteps" :key="i">{{ step }}</li>
+        </ol>
+        <button class="btn-primary w-full !py-2 text-sm mt-5" @click="showBlockedHelp = false">
+          {{ t.close }}
+        </button>
+      </div>
+    </Transition>
+
   </main>
 </template>
 
@@ -285,7 +379,8 @@ watch(lang, (newLang) => {
 }
 
 .notify-chip,
-.notify-chip-active {
+.notify-chip-active,
+.notify-chip-blocked {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -293,27 +388,48 @@ watch(lang, (newLang) => {
   font-weight: 600;
   font-size: 0.9rem;
   letter-spacing: 0.04em;
-  padding: 0.4rem 0.5rem;
-  line-height: 1;
+  padding: 0.4rem 0.75rem;
+  line-height: 1.2;
   min-height: 40px;
 }
 
 .notify-chip {
   appearance: none;
   background: transparent;
-  border: 0;
-  color: var(--color-muted);
+  border: 1.5px solid var(--color-ink);
+  color: var(--color-ink);
   cursor: pointer;
-  transition: color 0.15s;
+  transition: background 0.15s, color 0.15s;
 }
 
 .notify-chip:hover,
 .notify-chip:focus-visible {
-  color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
 
 .notify-chip-active {
   color: var(--color-moss);
   user-select: none;
+  padding-left: 0;
+}
+
+.notify-chip-blocked {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+  padding-left: 0;
+}
+
+.notify-chip-blocked:hover,
+.notify-chip-blocked:focus-visible {
+  color: var(--color-ink);
+}
+
+.notif-blocked-backdrop {
+  background: rgba(28, 43, 42, 0.45);
 }
 </style>
