@@ -107,7 +107,7 @@ onUnmounted(() => {
 .trilingual-label p {
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: clamp(1.1rem, 1.4vw, 1.6rem);
+  font-size: clamp(1.25rem, 1.6vw, 1.8rem);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-ink-2);
