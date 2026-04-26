@@ -1,5 +1,4 @@
 import tailwindcss from '@tailwindcss/vite'
-import { webUpdateNotice } from '@plugin-web-update-notification/vite'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -9,11 +8,6 @@ export default defineConfig({
   plugins: [
     vue(),
     tailwindcss(),
-    webUpdateNotice({
-      logVersion: true,
-      checkInterval: 10 * 60 * 1000,
-      hiddenDefaultNotification: true,
-    }),
     VitePWA({
       registerType: 'autoUpdate',
       strategies: 'injectManifest',
